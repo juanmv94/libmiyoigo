@@ -80,9 +80,18 @@ Realiza una petición a la API de miYoigo para obtener los consumos mensuales (c
 
 Realiza una petición a la API de miYoigo para obtener la lista detallada de actividades realizadas (llamadas, SMS, conexiones de datos) ordenadas por fecha para un teléfono móvil (mirar estructura *Detalle*).
 
-## Ejemplo
+## Ejemplos
 
-Se incluye un ejemplo del uso de la librería, asi como dos scripts para compilarlo tanto en Linux como en Windows.
+Se incluye un ejemplo de uso de la librería que imprime toda la información de consumos actuales y detallados del mes para todas las lineas contratadas por un usuario de miYoigo.
+
+Tambien se incluye un ejemplo que genera un archivo *yoigo.dat* con datos para generar una grafica de consumo de datos moviles mediante el script **yoigo.gnu** para [gnuplot](http://www.gnuplot.info/).
+
+**Ejemplo:**
+
+![ejemplo](https://github.com/juanmv94/libmiyoigo/raw/master/gnuplotexample.png "ejemplo")
+
+## Compilar libmiyoigo
+Se incluyen dos scripts para compilarlo tanto en Linux como en Windows.
 
 ## Acerca de
 
