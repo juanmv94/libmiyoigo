@@ -91,7 +91,7 @@ miYoigo::miYoigo(string telefono, string password) {
         Nodo* apellido1 = r->find("midName");
         Nodo* apellido2 = r->find("lastName");
         Nodo* productos = r->find("products");
-        if (id == nullptr || nombre == nullptr || apellido1 == nullptr || apellido2 == nullptr || productos == nullptr ||
+        if (id == NULL || nombre == NULL || apellido1 == NULL || apellido2 == NULL || productos == NULL ||
                 id->elemento.get_tipo() != JJSON_String || nombre->elemento.get_tipo() != JJSON_String ||
                 apellido1->elemento.get_tipo() != JJSON_String || apellido2->elemento.get_tipo() != JJSON_String ||
                 productos->elemento.get_tipo() != JJSON_Vector) throw MiYoigoApiException();
@@ -164,8 +164,7 @@ struct Consumos miYoigo::obtener_consumos(string telefono) {
     Nodo * consumos[4];
     struct Consumo * c_st[] = {&c.llamadas, &c.datos, &c.mms, &c.sms};
 
-    JJSON::JJSON_Integers = true;
-    Elemento obtenido = JJSON::parse(responseBody.memory);
+    Elemento obtenido = JJSON::parse(responseBody.memory, true);
     try {
         if (obtenido.get_tipo() != JJSON_Root) throw MiYoigoApiException();
         Raiz* r = obtenido.get_root();
@@ -175,23 +174,23 @@ struct Consumos miYoigo::obtener_consumos(string telefono) {
         consumos[3] = r->find("sms");
 
         //data lleva dentro otra raiz de la que obtenemos "amount"
-        if (consumos[1] == nullptr || consumos[1]->elemento.get_tipo() != JJSON_Root) throw MiYoigoApiException();
+        if (consumos[1] == NULL || consumos[1]->elemento.get_tipo() != JJSON_Root) throw MiYoigoApiException();
         consumos[1] = consumos[1]->elemento.get_root()->find("amount");
 
         //Checkeamos nodos obtenidos, y rellenamos estructura con punteros en c_st
         for (int i = 0; i < 4; i++) {
-            if (consumos[i] == nullptr || consumos[i]->elemento.get_tipo() != JJSON_Root) throw MiYoigoApiException();
+            if (consumos[i] == NULL || consumos[i]->elemento.get_tipo() != JJSON_Root) throw MiYoigoApiException();
             Raiz* rn = consumos[i]->elemento.get_root();
 
             Nodo* consumido = rn->find("consumed");
             Nodo* unidad = rn->find("unit");
             Nodo* ilimitado = rn->find("unlimited");
 
-            if (consumido == nullptr || unidad == nullptr || ilimitado == nullptr ||
+            if (consumido == NULL || unidad == NULL || ilimitado == NULL ||
                     consumido->elemento.get_tipo() != JJSON_Integer || unidad->elemento.get_tipo() != JJSON_String ||
                     ilimitado->elemento.get_tipo() != JJSON_Boolean) throw MiYoigoApiException();
 
-            c_st[i]->consumido = consumido->elemento.get_integer();
+            c_st[i]->consumido = consumido->elemento.get_int();
             c_st[i]->unidad = *unidad->elemento.get_string();
             c_st[i]->ilimitado = ilimitado->elemento.get_boolean();
 
@@ -200,12 +199,12 @@ struct Consumos miYoigo::obtener_consumos(string telefono) {
                 Nodo* incluido = rn->find("included");
                 Nodo* restante = rn->find("remaining");
 
-                if (incluido == nullptr || restante == nullptr ||
+                if (incluido == NULL || restante == NULL ||
                         incluido->elemento.get_tipo() != JJSON_Integer ||
                         restante->elemento.get_tipo() != JJSON_Integer) throw MiYoigoApiException();
 
-                c_st[i]->incluido = incluido->elemento.get_integer();
-                c_st[i]->restante = restante->elemento.get_integer();
+                c_st[i]->incluido = incluido->elemento.get_int();
+                c_st[i]->restante = restante->elemento.get_int();
             }
         }
     } catch (MiYoigoApiException& e) {
@@ -220,14 +219,13 @@ vector<struct Detalle> miYoigo::obtener_detalles_consumo(string telefono) {
     GET_request("https://api-miyoigo.yoigo.com/consumption-api/customers/" + micuenta.id + "/products/" + telefono + "/lines/" + telefono + "/consumption/mobile/detailed");
 
     //Parseamos JSON obtenido
-    JJSON::JJSON_Integers = false;
     Elemento obtenido = JJSON::parse(responseBody.memory);
     vector<struct Detalle> v;
     try {
         if (obtenido.get_tipo() != JJSON_Root) throw MiYoigoApiException();
         Raiz* r = obtenido.get_root();
         Nodo* n = r->find("consumptions");
-        if (n == nullptr || n->elemento.get_tipo() != JJSON_Vector) throw MiYoigoApiException();
+        if (n == NULL || n->elemento.get_tipo() != JJSON_Vector) throw MiYoigoApiException();
         vector<Elemento>* ve = n->elemento.get_vector();
 
         //Procesamos cada uno de los datalles de consumos
@@ -235,7 +233,7 @@ vector<struct Detalle> miYoigo::obtener_detalles_consumo(string telefono) {
             if (it->get_tipo() != JJSON_Root) throw MiYoigoApiException();
             Raiz* re = it->get_root();
             Nodo* nvd = re->find("details"); //detalles para cada día
-            if (nvd == nullptr || nvd->elemento.get_tipo() != JJSON_Vector) throw MiYoigoApiException();
+            if (nvd == NULL || nvd->elemento.get_tipo() != JJSON_Vector) throw MiYoigoApiException();
             vector<Elemento>* vd = nvd->elemento.get_vector();
             for (vector<Elemento>::iterator itd = vd->begin(); itd != vd->end(); ++itd) {
                 if (itd->get_tipo() != JJSON_Root) throw MiYoigoApiException();
@@ -247,7 +245,7 @@ vector<struct Detalle> miYoigo::obtener_detalles_consumo(string telefono) {
                 Nodo* ntype = rd->find("type");
                 Nodo* nunit = rd->find("unit");
 
-                if (nconsumed == nullptr || ncost == nullptr || ndate == nullptr || ntype == nullptr || nunit == nullptr ||
+                if (nconsumed == NULL || ncost == NULL || ndate == NULL || ntype == NULL || nunit == NULL ||
                         nconsumed->elemento.get_tipo() != JJSON_Float || ncost->elemento.get_tipo() != JJSON_Root ||
                         ndate->elemento.get_tipo() != JJSON_String || ntype->elemento.get_tipo() != JJSON_String ||
                         nunit->elemento.get_tipo() != JJSON_String) throw MiYoigoApiException();
@@ -257,7 +255,7 @@ vector<struct Detalle> miYoigo::obtener_detalles_consumo(string telefono) {
                 Nodo* namount = rc->find("amount");
                 Nodo* ncurrency = rc->find("currencyCode");
 
-                if (namount == nullptr || ncurrency == nullptr || namount->elemento.get_tipo() != JJSON_Float ||
+                if (namount == NULL || ncurrency == NULL || namount->elemento.get_tipo() != JJSON_Float ||
                         ncurrency->elemento.get_tipo() != JJSON_String) throw MiYoigoApiException();
 
                 //Una vez obtenidos todos los nodos y checkeados, rellenamos el detalle
@@ -274,7 +272,7 @@ vector<struct Detalle> miYoigo::obtener_detalles_consumo(string telefono) {
 
                 if (d.tipo != TIPO_DATOS) {
                     Nodo* ndestination = rd->find("destination");
-                    if (ndestination == nullptr ||
+                    if (ndestination == NULL ||
                             ndestination->elemento.get_tipo() != JJSON_String) throw MiYoigoApiException();
                     d.destino = *ndestination->elemento.get_string();
                 }
